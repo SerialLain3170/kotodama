@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☆★ビジュアルノベル製作所★☆ 〜 きみだけのVNをつくろう 〜</title>
+<link rel="stylesheet" href="/static/retro.css">
+</head>
+<body>
+
+<marquee class="topmarquee" scrollamount="5">★★★ ようこそ！ビジュアルノベル製作所へ！★★★ リンク・フリーです★ 相互リンク募集中★ このサイトは Internet Explorer 4.0 以上推奨です★★★</marquee>
+
+<center>
+
+<table class="mainframe" cellspacing="0" cellpadding="0" width="760">
+<tr><td>
+
+  <table width="100%" cellspacing="0" cellpadding="10" class="headtable"><tr><td align="center">
+    <div class="logo">
+      ☆★<span class="rainbow">ビジュアルノベル製作所</span>★☆
+    </div>
+    <div class="subtitle">〜 AIといっしょに、きみだけのギャルゲーをつくろう 〜</div>
+    <img class="underconst" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='24'><rect width='300' height='24' fill='%23ffe000'/><g fill='%23000'><rect x='0' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='40' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='80' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='120' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='160' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='200' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='240' y='0' width='12' height='24' transform='skewX(-20)'/><rect x='280' y='0' width='12' height='24' transform='skewX(-20)'/></g></svg>" alt="工事中" width="300" height="24">
+    <div class="blink new">NEW! レトロモードでPC-98風VNを作ろう！</div>
+  </td></tr></table>
+
+  <img class="rainbowbar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='760' height='6'><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%23ff0000'/><stop offset='0.17' stop-color='%23ff9900'/><stop offset='0.34' stop-color='%23ffee00'/><stop offset='0.5' stop-color='%2300cc44'/><stop offset='0.67' stop-color='%230099ff'/><stop offset='0.84' stop-color='%236633ff'/><stop offset='1' stop-color='%23ff00cc'/></linearGradient><rect width='760' height='6' fill='url(%23g)'/></svg>" width="760" height="6">
+
+  <table width="100%" cellspacing="0" cellpadding="14"><tr>
+
+    <td width="150" valign="top" class="sidebar">
+      <div class="sidebox">
+        <div class="sideboxtitle">▼リンク集▼</div>
+        <span class="blink">▶</span> <a href="/">ポップ版トップへ戻る</a><br><br>
+        <span class="blink">▶</span> <a href="#">相互リンク募集</a><br>
+        <span class="blink">▶</span> <a href="#">掲示板はこちら</a><br>
+        <span class="blink">▶</span> <a href="#">ゲストブック</a><br>
+        <span class="blink">▶</span> <a href="#">管理人日記</a><br>
+      </div>
+      <br>
+      <div class="sidebox">
+        <div class="sideboxtitle">▼あなたは</div>
+        <div class="counter" id="counter">0000000</div>
+        <div class="counter-label">人目のお客様です</div>
+      </div>
+      <br>
+      <div class="sidebox">
+        <div class="sideboxtitle">▼BGM</div>
+        <div class="nowplaying">♪ Now Playing: bgm.mid ♪</div>
+      </div>
+    </td>
+
+    <td valign="top">
+
+      <div class="panel" id="form-panel">
+        <div class="panelheading">☆★ VNデータ入力フォーム ★☆</div>
+        <form id="retro-form">
+          <table class="formtable" cellspacing="4" cellpadding="4" width="100%">
+            <tr><td class="flabel">▶キャラクター名</td><td><input type="text" id="character_name" value="ヒロイン" required></td></tr>
+            <tr><td class="flabel">▶キャラの見た目</td><td><textarea id="character_description" rows="2" required>長い銀髪、青い目、清楚な女子高生、セーラー服</textarea></td></tr>
+            <tr><td class="flabel">▶背景・舞台</td><td><textarea id="background_description" rows="2" required>夕暮れの誰もいない教室、桜の木が窓の外に見える</textarea></td></tr>
+            <tr><td class="flabel">▶性格</td><td><textarea id="persona" rows="2" required>普段は強気だが、恋愛には不器用。主人公のことが好きだが素直に言えない。</textarea></td></tr>
+            <tr><td class="flabel">▶これまでの状況</td><td><textarea id="context" rows="2" required>卒業式の後、二人きりで教室に残っている。気まずい沈黙が続いている。</textarea></td></tr>
+            <tr><td class="flabel">▶ジャンル</td><td><input type="text" id="genre" value="青春恋愛、切ない" required></td></tr>
+          </table>
+          <p align="center"><button type="submit" class="retrobutton bigbtn">☆★ 生成開始 ★☆</button></p>
+        </form>
+      </div>
+
+      <div class="panel hidden" id="waiting-panel">
+        <p class="blink">生成中です。しばらくお待ちください…</p>
+        <p id="wait-message">☆彡 いま頑張って作っています ☆彡</p>
+      </div>
+
+      <div class="panel hidden" id="video-panel">
+        <table class="playerframe" cellspacing="0" cellpadding="0"><tr><td>
+          <div class="playertitlebar">◆ Now Playing: your_vn.mp4 ◆</div>
+          <video id="retro-video" controls width="640" height="400"></video>
+        </td></tr></table>
+        <p>
+          <a id="retro-download" class="retrobutton" download>♪ ダウンロードする ♪</a>
+          <button id="retro-again-btn" class="retrobutton">↺ もう一度作る</button>
+        </p>
+      </div>
+
+      <div class="panel hidden" id="error-panel">
+        <p class="blink">×××エラーが発生しました×××</p>
+        <pre id="retro-error"></pre>
+        <button id="retro-retry-btn" class="retrobutton">↺ もう一度試す</button>
+      </div>
+
+      <img class="rainbowbar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='560' height='4'><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='%23ff0000'/><stop offset='0.5' stop-color='%2300cc44'/><stop offset='1' stop-color='%230099ff'/></linearGradient><rect width='560' height='4' fill='url(%23g2)'/></svg>" width="560" height="4">
+
+      <p class="notice">
+        このホームページはリンク・フリーです。無断転載はご遠慮ください。<br>
+        画面推奨解像度: 800x600 / 文字サイズ「中」でご覧ください。<br>
+        <span class="blink">★</span> 相互リンクはメールにて受付中 <span class="blink">★</span>
+      </p>
+
+    </td>
+  </tr></table>
+
+  <table width="100%" cellpadding="6" class="foottable"><tr><td align="center">
+    Last Update: 2026.07.20　管理人：AI
+    <br>
+    <span class="badge">IE4.0推奨</span> <span class="badge">800x600</span> <span class="badge">NN対応</span>
+  </td></tr></table>
+
+</td></tr>
+</table>
+
+</center>
+
+<script src="/static/retro.js"></script>
+</body>
+</html>

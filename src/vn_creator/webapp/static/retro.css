@@ -1,0 +1,185 @@
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+body {
+  margin: 0;
+  font-family: "MS PGothic", "ＭＳ Ｐゴシック", "Osaka", sans-serif;
+  color: #00ffea;
+  background-color: #000033;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.9) 0 1px, transparent 1px),
+    radial-gradient(circle at 30% 70%, rgba(255,255,255,0.7) 0 1px, transparent 1px),
+    radial-gradient(circle at 55% 15%, rgba(255,255,255,0.8) 0 1px, transparent 1px),
+    radial-gradient(circle at 75% 55%, rgba(255,255,255,0.6) 0 1px, transparent 1px),
+    radial-gradient(circle at 90% 30%, rgba(255,255,255,0.9) 0 1px, transparent 1px),
+    radial-gradient(circle at 15% 90%, rgba(255,255,255,0.5) 0 1px, transparent 1px),
+    radial-gradient(circle at 65% 85%, rgba(255,255,255,0.7) 0 1px, transparent 1px),
+    linear-gradient(180deg, #000033, #1a0033 60%, #330033);
+  background-size: 140px 140px, 160px 160px, 120px 120px, 180px 180px, 150px 150px, 170px 170px, 130px 130px, 100% 100%;
+  font-size: 14px;
+}
+
+a { color: #ffff00; text-decoration: underline; }
+a:visited { color: #ff66ff; }
+a:hover { color: #00ffea; }
+
+.topmarquee {
+  background: #ff00aa;
+  color: #ffff00;
+  font-weight: bold;
+  padding: 4px 0;
+  font-size: 16px;
+  border-bottom: 2px solid #ffff00;
+}
+
+.mainframe {
+  margin: 14px auto;
+  background: #000022;
+  border: 4px outset #a0a0ff;
+  box-shadow: 0 0 0 2px #000, 0 0 24px rgba(255,0,255,0.4);
+}
+
+.headtable { background: repeating-linear-gradient(45deg, #200040, #200040 10px, #2b0055 10px, #2b0055 20px); }
+
+.logo {
+  font-size: 30px;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #ff00aa, -1px -1px 0 #00eaff;
+  letter-spacing: 1px;
+}
+
+.rainbow {
+  background: linear-gradient(90deg, #ff0000, #ff9900, #ffee00, #00cc44, #0099ff, #6633ff, #ff00cc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle { color: #ffccff; font-size: 13px; margin-top: 4px; }
+
+.underconst { margin-top: 8px; image-rendering: pixelated; border: 2px solid #000; }
+
+.blink.new {
+  margin-top: 8px;
+  color: #ff3355;
+  font-weight: bold;
+  animation: blink 1s steps(1) infinite;
+  background: #ffffcc;
+  display: inline-block;
+  padding: 3px 10px;
+  border: 2px solid #ff3355;
+}
+
+.blink { animation: blink 1s steps(1) infinite; }
+
+.rainbowbar { display: block; margin: 0 auto; }
+
+.sidebar { background: #000044; border-right: 2px dashed #6666ff; font-size: 12px; }
+
+.sidebox {
+  background: #110033;
+  border: 2px inset #8888ff;
+  padding: 8px;
+}
+.sideboxtitle { color: #ffff66; font-weight: bold; margin-bottom: 6px; border-bottom: 1px solid #6666ff; }
+
+.counter {
+  font-family: "Courier New", monospace;
+  background: #000;
+  color: #ff2222;
+  letter-spacing: 3px;
+  font-size: 22px;
+  padding: 4px 6px;
+  border: 2px inset #888;
+  text-align: center;
+}
+.counter-label { font-size: 11px; color: #ccccff; text-align: center; margin-top: 3px; }
+
+.nowplaying { color: #66ffcc; font-size: 12px; }
+
+.panel {
+  background: #0a0a2a;
+  border: 3px ridge #7755ff;
+  padding: 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.panel p { margin: 6px 0; }
+#wait-message { color: #ffff99; }
+
+.playerframe {
+  margin: 0 auto 10px;
+  background: linear-gradient(180deg, #4444aa, #222266);
+  border: 3px outset #9999ff;
+  padding: 6px;
+}
+.playertitlebar {
+  background: linear-gradient(180deg, #6666ff, #3333aa);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  margin-bottom: 4px;
+}
+#retro-video { display: block; background: #000; border: 2px solid #000; image-rendering: pixelated; }
+
+.retrobutton {
+  display: inline-block;
+  background: linear-gradient(180deg, #ff77cc, #cc2288);
+  border: 2px outset #ffaadd;
+  color: #fff;
+  font-weight: bold;
+  padding: 6px 16px;
+  text-decoration: none;
+}
+.retrobutton:hover { background: linear-gradient(180deg, #ff99dd, #dd44aa); }
+
+.notice { font-size: 11px; color: #aaaadd; margin-top: 10px; line-height: 1.6; }
+
+.foottable { background: #110022; border-top: 2px solid #6666ff; color: #ccccff; font-size: 11px; }
+.badge {
+  display: inline-block;
+  background: #222266;
+  border: 1px solid #8888ff;
+  padding: 2px 6px;
+  margin: 0 3px;
+  color: #ffff99;
+}
+
+.hidden { display: none !important; }
+
+.panelheading {
+  color: #ffff66;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 0 #ff00aa;
+}
+
+.formtable { text-align: left; }
+.flabel {
+  color: #aaffcc;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  vertical-align: top;
+  padding-top: 6px;
+}
+.formtable input[type=text], .formtable textarea {
+  width: 100%;
+  background: #ccffee;
+  color: #000;
+  border: 2px inset #666;
+  font-family: "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+  font-size: 13px;
+  padding: 3px;
+}
+.formtable textarea { resize: vertical; }
+
+.retrobutton.bigbtn { font-size: 15px; padding: 8px 22px; }
+
+button.retrobutton {
+  font-family: inherit;
+  cursor: pointer;
+  margin: 0 4px;
+}

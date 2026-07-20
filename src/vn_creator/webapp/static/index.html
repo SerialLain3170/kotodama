@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VN MAKER ✨ ポップに作る、あなたのビジュアルノベル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/pop.css">
+</head>
+<body>
+
+<div class="floaties" aria-hidden="true">
+  <span style="--d:0s;--x:6%">🌸</span>
+  <span style="--d:2s;--x:18%">⭐</span>
+  <span style="--d:4s;--x:32%">💖</span>
+  <span style="--d:1s;--x:52%">✨</span>
+  <span style="--d:3s;--x:68%">🎀</span>
+  <span style="--d:5s;--x:80%">🌈</span>
+  <span style="--d:2.5s;--x:92%">💫</span>
+</div>
+
+<header class="hero">
+  <h1><span class="pop-title">VN MAKER</span><span class="sparkle">✨</span></h1>
+  <p class="tagline">キャラも、背景も、台詞も、音楽も ── ぜんぶAIが作る、あなただけのビジュアルノベル！</p>
+</header>
+
+<main class="stage">
+
+  <section id="form-card" class="card">
+    <h2>🎬 シーンを作る</h2>
+    <form id="gen-form">
+      <label class="field">
+        <span class="field-label">👧 キャラクター名</span>
+        <input type="text" id="character_name" value="ヒロイン" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">🎨 キャラクターの見た目</span>
+        <textarea id="character_description" rows="2" required>長い銀髪、青い目、清楚な女子高生、セーラー服</textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">🏞️ 背景・舞台</span>
+        <textarea id="background_description" rows="2" required>夕暮れの誰もいない教室、桜の木が窓の外に見える</textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">💭 性格</span>
+        <textarea id="persona" rows="2" required>普段は強気だが、恋愛には不器用。主人公のことが好きだが素直に言えない。</textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">📖 これまでの状況</span>
+        <textarea id="context" rows="2" required>卒業式の後、二人きりで教室に残っている。気まずい沈黙が続いている。</textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">🎭 ジャンル</span>
+        <input type="text" id="genre" value="青春恋愛、切ない" required>
+      </label>
+
+      <div class="retro-toggle-row">
+        <span class="field-label">🕹️ レトロ風 (PC-98スタイル) にする</span>
+        <label class="switch">
+          <input type="checkbox" id="retro">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button type="submit" id="submit-btn" class="big-button">🚀 生成する！</button>
+    </form>
+  </section>
+
+  <section id="status-card" class="card hidden">
+    <h2 id="status-title">✨ がんばって作成中…</h2>
+    <div class="loader">
+      <span class="dot" style="--i:0"></span>
+      <span class="dot" style="--i:1"></span>
+      <span class="dot" style="--i:2"></span>
+      <span class="dot" style="--i:3"></span>
+    </div>
+    <p id="status-message">シーンを考えています…（数分かかります）</p>
+  </section>
+
+  <section id="result-card" class="card hidden">
+    <h2>🎉 完成！</h2>
+    <div class="video-frame">
+      <video id="result-video" controls></video>
+    </div>
+    <div class="result-actions">
+      <a id="download-link" class="big-button secondary" download>⬇️ ダウンロード</a>
+      <button id="again-btn" class="big-button">🔄 もう一度作る</button>
+    </div>
+  </section>
+
+  <section id="error-card" class="card hidden">
+    <h2>😢 うまくいきませんでした</h2>
+    <pre id="error-message"></pre>
+    <button id="retry-btn" class="big-button">🔄 もう一度試す</button>
+  </section>
+
+</main>
+
+<footer>
+  <p>Powered by Claude + Illustrious-XL + Style-Bert-VITS2 + MusicGen</p>
+</footer>
+
+<script src="/static/pop.js"></script>
+</body>
+</html>
