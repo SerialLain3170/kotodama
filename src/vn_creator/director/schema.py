@@ -47,7 +47,22 @@ class SceneScript(BaseModel):
     )
     duration_sec: float
     emotion: str
-    dialogue: str = Field(..., description="The Japanese line of dialogue to be spoken.")
+    narration: str = Field(
+        ...,
+        description=(
+            "One or more Japanese narration/description sentences (scene-setting, action, "
+            "an internal thought) — prose, not spoken/voiced, shown as plain text alongside "
+            "dialogue like a real VN's mixed narration+dialogue text block. Required, never "
+            "empty: this plus dialogue must total at least 2 sentences and fewer than 15."
+        ),
+    )
+    dialogue: str = Field(
+        ...,
+        description=(
+            "The Japanese line(s) of dialogue to be spoken (voiced) — one or more sentences. "
+            "Combined with narration this must total fewer than 15 sentences."
+        ),
+    )
     acting_beats: list[ActingBeat] = Field(
         default_factory=list, description="Used only when shot_type is talking_head."
     )

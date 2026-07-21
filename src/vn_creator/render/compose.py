@@ -27,7 +27,7 @@ def _render_textbox_frames(
     scene: SceneScript, character_name: str, frames_dir: Path, text_style: str, canvas_size: tuple[int, int]
 ) -> None:
     frames_dir.mkdir(parents=True, exist_ok=True)
-    ctx = make_text_context(text_style, scene.dialogue, canvas_size)
+    ctx = make_text_context(text_style, scene, canvas_size)
 
     n_frames = int(round(scene.duration_sec * FPS))
     for i in range(n_frames):

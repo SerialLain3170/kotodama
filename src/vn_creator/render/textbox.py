@@ -1,12 +1,18 @@
 """Pluggable VN textbox styles (PIL, for correct Japanese rendering).
 
 Each style is a (prepare, draw) pair registered in STYLES:
-  prepare(dialogue, canvas_size) -> a context dict the draw fn needs (wrapped
-    lines, fonts, whatever) — computed once per shot, not per frame.
+  prepare(scene, canvas_size) -> a context dict the draw fn needs (wrapped
+    lines, fonts, the combined display text, whatever) — computed once per
+    shot, not per frame.
   draw(draw, canvas_size, scene, character_name, t, ctx) -> draws the style
     (or nothing, before scene.text_start) onto `draw`'s image for time t.
 
 Add a new style by writing a prepare/draw pair and adding it to STYLES.
+
+Every style displays scene.narration (unvoiced prose) immediately followed by
+scene.dialogue (the voiced line) as one combined, continuously-typewritten
+text block — the real VN convention (narration sets the scene/action, then
+the line), rather than dialogue alone.
 
 All per-style pixel constants (margins, font sizes, box heights...) are tuned
 for REFERENCE_SIZE and scaled by canvas_size[0]/REFERENCE_SIZE[0] wherever they
@@ -28,6 +34,17 @@ CHARS_PER_SEC = 12.0
 
 def _scale(canvas_size: tuple[int, int]) -> float:
     return canvas_size[0] / REFERENCE_SIZE[0]
+
+
+def _combined_text(scene, quote_dialogue: bool) -> str:
+    """narration (plain prose) immediately followed by dialogue (optionally
+    quoted with corner brackets) — one continuous displayed/typewritten
+    string, matching real VN mixed narration+dialogue text blocks."""
+    narration = scene.narration.strip()
+    dialogue = scene.dialogue.strip()
+    if quote_dialogue and dialogue and not dialogue.startswith("「"):
+        dialogue = f"「{dialogue}」"
+    return narration + dialogue
 
 
 def wrap_text(draw, text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
@@ -63,7 +80,7 @@ _DEFAULT_NAME_SIZE = 28
 _DEFAULT_TEXT_SIZE = 34
 
 
-def _prepare_default(dialogue: str, canvas_size: tuple[int, int]) -> dict:
+def _prepare_default(scene, canvas_size: tuple[int, int]) -> dict:
     from PIL import Image, ImageDraw
 
     s = _scale(canvas_size)
@@ -71,9 +88,10 @@ def _prepare_default(dialogue: str, canvas_size: tuple[int, int]) -> dict:
     margin = _DEFAULT_MARGIN * s
     name_font = ImageFont.truetype(SANS_REGULAR, round(_DEFAULT_NAME_SIZE * s))
     text_font = ImageFont.truetype(SANS_REGULAR, round(_DEFAULT_TEXT_SIZE * s))
+    full_text = _combined_text(scene, quote_dialogue=False)
     dummy_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
-    wrapped = wrap_text(dummy_draw, dialogue, text_font, w - 2 * margin - 20 * s)
-    return {"wrapped": wrapped, "name_font": name_font, "text_font": text_font}
+    wrapped = wrap_text(dummy_draw, full_text, text_font, w - 2 * margin - 20 * s)
+    return {"wrapped": wrapped, "full_text": full_text, "name_font": name_font, "text_font": text_font}
 
 
 def _draw_default(draw, canvas_size, scene, character_name, t, ctx) -> None:
@@ -88,7 +106,7 @@ def _draw_default(draw, canvas_size, scene, character_name, t, ctx) -> None:
         radius=round(16 * s), fill=(10, 10, 20, 200),
     )
     draw.text((margin + 20 * s, box_top + 14 * s), character_name, font=ctx["name_font"], fill=(255, 210, 120, 255))
-    n_shown = min(len(scene.dialogue), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
+    n_shown = min(len(ctx["full_text"]), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
     y = box_top + 14 * s + _DEFAULT_NAME_SIZE * s + 16 * s
     _draw_revealed_lines(draw, ctx["wrapped"], n_shown, margin + 20 * s, y, (_DEFAULT_TEXT_SIZE + 10) * s, ctx["text_font"], (255, 255, 255, 255))
 
@@ -107,17 +125,17 @@ _NVL_NAME_SIZE = 22
 _NVL_DIM_ALPHA = 150
 
 
-def _prepare_leaf_nvl(dialogue: str, canvas_size: tuple[int, int]) -> dict:
+def _prepare_leaf_nvl(scene, canvas_size: tuple[int, int]) -> dict:
     from PIL import Image, ImageDraw
 
     s = _scale(canvas_size)
     w, _ = canvas_size
     text_font = ImageFont.truetype(SANS_REGULAR, round(_NVL_TEXT_SIZE * s))
     name_font = ImageFont.truetype(SANS_REGULAR, round(_NVL_NAME_SIZE * s))
-    quoted = dialogue if dialogue.startswith("「") else f"「{dialogue}」"
+    full_text = _combined_text(scene, quote_dialogue=True)
     dummy_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
-    wrapped = wrap_text(dummy_draw, quoted, text_font, w - 2 * _NVL_MARGIN_X * s)
-    return {"wrapped": wrapped, "quoted": quoted, "text_font": text_font, "name_font": name_font}
+    wrapped = wrap_text(dummy_draw, full_text, text_font, w - 2 * _NVL_MARGIN_X * s)
+    return {"wrapped": wrapped, "full_text": full_text, "text_font": text_font, "name_font": name_font}
 
 
 def _draw_leaf_nvl(draw, canvas_size, scene, character_name, t, ctx) -> None:
@@ -134,7 +152,7 @@ def _draw_leaf_nvl(draw, canvas_size, scene, character_name, t, ctx) -> None:
 
     draw.text((margin_x, _NVL_MARGIN_TOP * s), character_name, font=ctx["name_font"], fill=(190, 190, 190, 230))
 
-    n_shown = min(len(ctx["quoted"]), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
+    n_shown = min(len(ctx["full_text"]), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
     _draw_revealed_lines(draw, ctx["wrapped"], n_shown, margin_x, y0, line_height, ctx["text_font"], (255, 255, 255, 255))
 
 
@@ -151,16 +169,17 @@ _DDLC_BOX_FILL = (250, 244, 234, 255)
 _DDLC_TEXT_COLOR = (70, 55, 60, 255)
 
 
-def _prepare_ddlc(dialogue: str, canvas_size: tuple[int, int]) -> dict:
+def _prepare_ddlc(scene, canvas_size: tuple[int, int]) -> dict:
     from PIL import Image, ImageDraw
 
     s = _scale(canvas_size)
     w, _ = canvas_size
     text_font = ImageFont.truetype(SANS_BOLD, round(_DDLC_TEXT_SIZE * s))
     name_font = ImageFont.truetype(SANS_BOLD, round(_DDLC_NAME_SIZE * s))
+    full_text = _combined_text(scene, quote_dialogue=False)
     dummy_draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
-    wrapped = wrap_text(dummy_draw, dialogue, text_font, w - 2 * _DDLC_MARGIN * s - 40 * s)
-    return {"wrapped": wrapped, "text_font": text_font, "name_font": name_font}
+    wrapped = wrap_text(dummy_draw, full_text, text_font, w - 2 * _DDLC_MARGIN * s - 40 * s)
+    return {"wrapped": wrapped, "full_text": full_text, "text_font": text_font, "name_font": name_font}
 
 
 def _draw_ddlc(draw, canvas_size, scene, character_name, t, ctx) -> None:
@@ -187,7 +206,7 @@ def _draw_ddlc(draw, canvas_size, scene, character_name, t, ctx) -> None:
     )
     draw.text((pill_left + pill_pad_x, pill_top + 8 * s), character_name, font=name_font, fill=(255, 255, 255, 255))
 
-    n_shown = min(len(scene.dialogue), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
+    n_shown = min(len(ctx["full_text"]), int(max(0.0, t - scene.text_start) * CHARS_PER_SEC))
     y = box_top + pill_h - 4 * s
     _draw_revealed_lines(draw, ctx["wrapped"], n_shown, margin + 24 * s, y, (_DDLC_TEXT_SIZE + 12) * s, ctx["text_font"], _DDLC_TEXT_COLOR)
 
@@ -199,9 +218,9 @@ STYLES = {
 }
 
 
-def make_text_context(style: str, dialogue: str, canvas_size: tuple[int, int]) -> dict:
+def make_text_context(style: str, scene, canvas_size: tuple[int, int]) -> dict:
     prepare_fn, _ = STYLES[style]
-    return prepare_fn(dialogue, canvas_size)
+    return prepare_fn(scene, canvas_size)
 
 
 def draw_textbox(style: str, draw, canvas_size: tuple[int, int], scene, character_name: str, t: float, ctx: dict) -> None:

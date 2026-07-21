@@ -26,8 +26,10 @@ from vn_creator.character.generate import generate_background, generate_characte
 from vn_creator.director.generate import generate_scene
 from vn_creator.director.schema import SceneInput, SceneScript
 from vn_creator.illustration.generate import generate_illustration
+from vn_creator.illustration.generate_anima import generate_illustration_anima
 from vn_creator.render.compose import compose_scene
 from vn_creator.render.illustration_shot import render_illustration_shot
+from vn_creator.render.textbox import CHARS_PER_SEC
 from vn_creator.tts.synth import synthesize
 
 
@@ -103,9 +105,14 @@ def run(
     raw_voice_path = config.TMP_DIR / "run_voice_raw.wav"
     _, actual_dur = synthesize(scene.dialogue, scene.emotion, target_speech_dur, raw_voice_path)
 
-    # Reconcile the script's timeline with the TTS engine's actual output length.
+    # Reconcile the script's timeline with the TTS engine's actual output length
+    # AND with how long the textbox needs to reveal the full narration+dialogue
+    # text (the Director sizes duration_sec for this too, but its estimate can
+    # be off — never let the video cut away before the text finishes typing).
     scene.speech_end = scene.speech_start + actual_dur
-    scene.duration_sec = max(scene.duration_sec, scene.speech_end + 0.3)
+    combined_text_len = len(scene.narration) + len(scene.dialogue)
+    text_reveal_end = scene.text_start + combined_text_len / CHARS_PER_SEC
+    scene.duration_sec = max(scene.duration_sec, scene.speech_end + 0.3, text_reveal_end + 0.5)
 
     print("[3/5] Padding audio to full shot length...", file=sys.stderr)
     padded_audio_path = config.TMP_DIR / "run_voice_padded.wav"
@@ -154,10 +161,21 @@ def run(
         # now — SadTalker is disabled here as an initial simplification; the
         # static illustration alone is the first step.
         print("[5/5] Generating unified scene illustration...", file=sys.stderr)
-        illustration_path = generate_illustration(
-            scene.illustration_prompt, config.TMP_DIR / "run_illustration.png",
-            seed=character_seed, retro=retro_style,
-        )
+        if retro_style:
+            # Anima + the PC-98 Gal LoRA (trained on real PC-98 game art) —
+            # a separate backend used only for retro shots; see
+            # illustration/generate_anima.py. Genuinely period-accurate
+            # dithering/linework, not Illustrious-XL's modern look plus an
+            # algorithmic filter.
+            illustration_path = generate_illustration_anima(
+                scene.illustration_prompt, config.TMP_DIR / "run_illustration.png",
+                seed=character_seed,
+            )
+        else:
+            illustration_path = generate_illustration(
+                scene.illustration_prompt, config.TMP_DIR / "run_illustration.png",
+                seed=character_seed,
+            )
         print("[5/5] Rendering Ken Burns shot...", file=sys.stderr)
         final = render_illustration_shot(
             scene, character_name, illustration_path, padded_audio_path, bgm_path, out_path,

@@ -88,7 +88,7 @@ def render_illustration_shot(
     # own field defaults already are 1.0 zoom / centered focus) so a
     # "talking_head"-labeled scene still renders fine here.
     cam = scene.camera_move or CameraMove()
-    text_ctx = make_text_context(text_style, scene.dialogue, canvas_size)
+    text_ctx = make_text_context(text_style, scene, canvas_size)
 
     with tempfile.TemporaryDirectory(dir=config.TMP_DIR) as tmp:
         tmp = Path(tmp)
