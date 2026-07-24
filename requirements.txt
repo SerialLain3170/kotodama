@@ -2,6 +2,8 @@
 # do not pin them here or uv will try to redownload the CUDA build.
 anthropic>=0.40.0
 pydantic>=2.0
+fastapi
+uvicorn[standard]
 numpy<2.0
 scipy
 librosa

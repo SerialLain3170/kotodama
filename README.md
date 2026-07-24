@@ -1,5 +1,7 @@
 # VN Creator
 
+![Retro mode web UI showing a generated PC-98-style video](docs/images/retro-web-screenshot.png)
+
 Generates short visual-novel-style scenes (a few seconds each) end-to-end from
 a text description: a scene director (Claude) writes the shot, then a chain
 of local models turn it into a video — a unified character+background
@@ -62,18 +64,19 @@ src/vn_creator/
   webapp/                       FastAPI web UI (server.py + static/)
 ```
 
-Large artifacts (model weights, caches, generated outputs) live under
-`/data/shasegawa/vn` (`VN_DATA_ROOT`), not in the repo — the home partition
-has very little free space on this machine. Third-party checkouts
-(SadTalker, libvgm) live in `/data/shasegawa/vn/third_party`. The Python venv
-itself is symlinked at `.venv` -> `/data/shasegawa/vn/venv` (created with
-`--system-site-packages` to reuse the system's CUDA build of torch instead of
-re-downloading it).
+Large artifacts (model weights, caches, generated outputs) should live outside
+the repo and are resolved from `VN_DATA_ROOT`. Pick a writable location with
+enough disk space, for example `$PWD/.vn-data` for a local checkout or a
+shared data volume on a GPU host. Third-party checkouts such as SadTalker and
+libvgm should live under `$VN_DATA_ROOT/third_party`.
 
 ## Setup
 
 ```bash
-source .venv/bin/activate     # -> /data/shasegawa/vn/venv
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export VN_DATA_ROOT="${VN_DATA_ROOT:-$PWD/.vn-data}"
 ```
 
 Secrets go in a git-ignored `.env` in the repo root:
@@ -82,16 +85,15 @@ Secrets go in a git-ignored `.env` in the repo root:
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-Model weights already downloaded under `/data/shasegawa/vn/models`:
-Style-Bert-VITS2 (jvnv-F1-jp), Illustrious-XL v2.0 + sdxl-vae-fp16-fix, the
-PC-98 style LoRA, Animagine XL 4.0 (legacy character path), and MusicGen
-(via the `transformers` cache). SadTalker's checkpoints and a patched clone
-of SadTalker itself live in `/data/shasegawa/vn/third_party/SadTalker` (patched
-for anime faces — see below).
+Place model weights under `$VN_DATA_ROOT/models`: Style-Bert-VITS2
+(jvnv-F1-jp), Illustrious-XL v2.0 + sdxl-vae-fp16-fix, the PC-98 style LoRA,
+Animagine XL 4.0 (legacy character path), and MusicGen (via the
+`transformers` cache). SadTalker checkpoints and any local SadTalker checkout
+should live under `$VN_DATA_ROOT/third_party/SadTalker` when using the legacy
+animation path.
 
-GPU: this is a shared machine; `config.py` pins `CUDA_VISIBLE_DEVICES=1` by
-default since GPU 0 (and often 3) run other tenants' jobs. Override with the
-env var if needed.
+GPU: set `CUDA_VISIBLE_DEVICES` before running if you need to select a specific
+GPU. On a single-GPU machine, `CUDA_VISIBLE_DEVICES=0` is usually appropriate.
 
 ## Usage
 
@@ -105,7 +107,7 @@ python scripts/run_scene.py \
   --persona "普段は強気だが、恋愛には不器用。主人公のことが好きだが素直に言えない。" \
   --context "卒業式の後、二人きりで教室に残っている。" \
   --genre "青春恋愛、切ない" \
-  --out /data/shasegawa/vn/outputs/scene.mp4
+  --out "$VN_DATA_ROOT/outputs/scene.mp4"
 ```
 
 Add `--retro-style` for the PC-98 look. `--text-style {default,leaf_nvl,ddlc}`
